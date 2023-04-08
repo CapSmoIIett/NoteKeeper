@@ -3,6 +3,17 @@
 
 #include <QMainWindow>
 
+#include <QMenuBar>
+#include <QToolBar>
+#include <QGridLayout>
+#include <QFrame>
+#include <QLabel>
+#include <QPushButton>
+
+#include <QVector>
+#include <QString>
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -17,5 +28,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    QMenuBar* p_MenuBar;
+    QToolBar* p_QToolBar;
 };
 #endif // MAINWINDOW_H
