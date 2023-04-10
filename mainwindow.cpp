@@ -162,10 +162,20 @@ QGridLayout* MainWindow::CreateCalendar()
         grid_layout->addWidget(frame, i / 7 + 1, i % 7);
     }
 
-    //for (int i = 0; i < 7; i++ )
-    //    v_Calendar[i]->hide();
+    /*****************************************************
+     * Print calendar
+     */
 
-    PrintCalendar();
+    auto days = Ctrl.GetWorkMonthDays();
+
+    for (int i = 0; i < days.size(); i++)
+    {
+        if (v_Calendar[i]->layout()->count() > 0)
+        {
+            auto a = v_Calendar[i]->layout()->itemAt(0)->widget();
+            dynamic_cast<QLabel*>(a)->setText(QString::number(days[i]));
+        }
+    }
 
     return grid_layout;
 }

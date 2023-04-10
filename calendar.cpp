@@ -117,9 +117,22 @@ QVector<int> CalendarCtrl::GetWorkMonthDays ()
     return month;
 }
 
-void CalendarCtrl::GetCurDate ()
+int CalendarCtrl::GetCurDay ()
 {
+    auto str = QDateTime::currentDateTime().toString("dd");
+    return str.toInt();
+}
 
+int CalendarCtrl::GetCurMonth ()
+{
+    auto str = QDateTime::currentDateTime().toString("MM");
+    return str.toInt();
+}
+
+int CalendarCtrl::GetCurYear ()
+{
+    auto str = QDateTime::currentDateTime().toString("yyyy");
+    return str.toInt();
 }
 
 bool CalendarCtrl::isMonthNeedAdditionalRow ()

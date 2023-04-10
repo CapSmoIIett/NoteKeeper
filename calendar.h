@@ -27,7 +27,7 @@
 
 #include <QString>
 #include <QVector>
-
+#include <QDateTime>
 
 class CalendarCtrl
 {
@@ -45,7 +45,9 @@ public:
     QVector<int> GetWorkMonthDays ();
 
     // Current - is functions about current month, day, year in real life
-    void GetCurDate ();
+    int GetCurDay ();
+    int GetCurMonth ();
+    int GetCurYear ();
 
     bool isMonthNeedAdditionalRow ();
 

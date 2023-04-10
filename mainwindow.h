@@ -53,4 +53,7 @@ private:
 
     QVBoxLayout* p_MainLayout;
 };
+
+
+
 #endif // MAINWINDOW_H
