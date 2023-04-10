@@ -19,6 +19,7 @@ set(PROJECT_SOURCES
         mainwindow.ui
         calendar.cpp
         calendar.h
+        stylesheets.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

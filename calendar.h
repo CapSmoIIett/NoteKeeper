@@ -3,13 +3,68 @@
 
 #include <QString>
 
-class Calendar
+
+#define JANUARY 	0
+#define FEBRUARY	1
+#define MARCH		2
+#define APRIL		3
+#define MAY			4
+#define JUNE			5
+#define JULY			6
+#define AUGUST		7
+#define SEPTEMBER	8
+#define OCTOBER		9
+#define NOVEMBER	10
+#define DECEMBER	11
+
+#define MONDAY		0
+#define TUESDAY		1
+#define WEDNESDAY	2
+#define THURSDAY	3
+#define FRIDAY		4
+#define SATURDAY	5
+#define SUNDAY		6
+
+#include <QString>
+#include <QVector>
+
+
+class CalendarCtrl
 {
 public:
-    Calendar();
+    CalendarCtrl ();
 
-    QString GetMonth();
-    QString GetYear();
+    int GetDayNumber (int day, int month, int  year);
+    int GetNumbersOfDays (int monthNumber, int year);
+    QString GetMonthName (int monthNumber);
+
+    // Work - is functions about month we show
+    int GetWorkYear  ();
+    int GetWorkMonth ();
+    void SetWorkMonth (int month);
+    QVector<int> GetWorkMonthDays ();
+
+    // Current - is functions about current month, day, year in real life
+    void GetCurDate ();
+
+    bool isMonthNeedAdditionalRow ();
+
+    void GoNextMonth();
+    void GoPrevMonth();
+
+private:
+
+    int i_WorkMonth;
+    int i_WorkYear;
+
+
+    QVector<QString> months =
+    {
+        "January", "February", "March",
+        "April", "May", "June",
+        "July", "August", "September",
+        "October", "November", "December"
+    };
 };
 
 #endif // CALENDAR_H
