@@ -126,7 +126,7 @@ QGridLayout* MainWindow::CreateCalendar()
 
     for (int i = 0; i < v_daysOfWeek.size(); i++)
     {
-        QFrame *frame = new QFrame;
+        FrameClickable *frame = new FrameClickable;
         frame->setMinimumHeight(50);//frame->setFixedHeight(50);
 
         QHBoxLayout *hl = new QHBoxLayout;
@@ -144,21 +144,23 @@ QGridLayout* MainWindow::CreateCalendar()
 
     for (auto i = 0; i < 42; i++ )
     {
-        QFrame *frame = new QFrame;
+        FrameClickable *frame = new FrameClickable;
         frame->setMinimumHeight(50);
 
-        QHBoxLayout *hl = new QHBoxLayout;
-        hl->setAlignment(Qt::AlignCenter);
+        QVBoxLayout *vl = new QVBoxLayout;
+        //vl->setAlignment(Qt::AlignCenter);
+        vl->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
         QLabel* l_name = new QLabel(QString::number(i + 1));
 
-        hl->addWidget(l_name);
-        frame->setLayout(hl);
-        frame->setObjectName("holiday");
+        vl->addWidget(l_name);
+        frame->setLayout(vl);
         frame->setStyleSheet(CELL_STYLE);
 
         frame->setContextMenuPolicy(Qt::CustomContextMenu);
+        //frame->setC
         connect(frame, &QFrame::customContextMenuRequested, this, [i, this](QPoint pos) {OnCustomMenuRequested (pos, i);});
+        connect(frame, &FrameClickable::DoubleClick, this, [i, this](QMouseEvent* event) {OnAddNote(event->pos(), i);});
 
         v_Calendar.push_back(frame);
 
@@ -274,4 +276,32 @@ void MainWindow::OnCopyDateToClipborad(int numberOfCell)
     if (clipboard->supportsSelection()) {
         clipboard->setText(text, QClipboard::Selection);
     }
+}
+
+void MainWindow::OnAddNote(QPoint pos, int numberOfCell)
+{
+    auto frame = v_Calendar[numberOfCell];
+
+    QTextBlock* text = new QTextBlock();
+    QFrame* coloredFrame = new QFrame;
+
+    if (frame->layout()->count() > 0)
+    {
+        auto layout = frame->layout();
+
+        QLabel* l = new QLabel("1");
+        layout->addWidget(l);
+    }
+}
+
+bool MainWindow::eventFilter(QObject* o, QEvent* e)
+{
+    if (e->type() == QEvent::MouseButtonDblClick)
+    {
+        QMouseEvent* m = (QMouseEvent*) e;
+        // process double click
+        return true; // eat event
+    }
+    // standard event processing
+    return false;
 }

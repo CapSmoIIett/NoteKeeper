@@ -20,6 +20,10 @@ set(PROJECT_SOURCES
         calendar.cpp
         calendar.h
         stylesheets.h
+        notedlg.cpp
+        notedlg.h
+        frameclickable.cpp
+        frameclickable.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

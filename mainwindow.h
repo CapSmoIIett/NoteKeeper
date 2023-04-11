@@ -10,11 +10,14 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QClipboard>
+#include <QTextBlock>
+#include <QSpacerItem>
 
 #include <QVector>
 #include <QString>
 
 #include "calendar.h"
+#include "frameclickable.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -35,14 +38,16 @@ public slots:
     void OnBtnNextClick();
     void OnBtnBackClick();
 
+    void OnCustomMenuRequested(QPoint pos, int numberOfCell);
+    void OnCopyDateToClipborad(int numberOfCell);
+
+    void OnAddNote(QPoint pos, int numberOfCell);
+
 private:
     QHBoxLayout* CreateCtrlPanel();
     QGridLayout* CreateCalendar();
 
-private slots:
-    void OnCustomMenuRequested(QPoint pos, int numberOfCell);
-    void OnCopyDateToClipborad(int numberOfCell);
-
+    bool eventFilter(QObject* o, QEvent* e);
 
 private:
     Ui::MainWindow *ui;
@@ -51,7 +56,7 @@ private:
     QMenuBar* p_MenuBar;
     QToolBar* p_QToolBar;
 
-    QVector<QFrame*> v_Calendar;
+    QVector<FrameClickable*> v_Calendar;
 
     QLabel* l_Date;
     QPushButton *b_Back;
