@@ -74,6 +74,11 @@ QString CalendarCtrl::GetMonthName (int monthNumber)
     return months[monthNumber];
 }
 
+QString CalendarCtrl::GetDayOfWeekName (Date date)
+{
+   return v_daysOfWeek[GetDayNumber(date.day, date.month + 1, date.year)];
+}
+
 int CalendarCtrl::GetWorkYear  ()
 {
     return i_WorkYear;

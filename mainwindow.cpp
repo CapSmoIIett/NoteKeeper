@@ -156,6 +156,10 @@ QGridLayout* MainWindow::CreateCalendar()
         frame->setLayout(hl);
         frame->setObjectName("holiday");
         frame->setStyleSheet(CELL_STYLE);
+
+        frame->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(frame, &QFrame::customContextMenuRequested, this, [i, this](QPoint pos) {OnCustomMenuRequested (pos, i);});
+
         v_Calendar.push_back(frame);
 
         grid_layout->addWidget(frame, i / 7 + 1, i % 7);
@@ -242,18 +246,32 @@ void MainWindow::OnBtnBackClick()
     PrintCalendar();
 }
 
-void MainWindow::OnCustomMenuRequested()
+void MainWindow::OnCustomMenuRequested(QPoint pos, int numberOfCell)
 {
     QMenu * menu = new QMenu(this);
-    /* Создаём действия для контекстного меню */
-    QAction * editDevice = new QAction("Edit", this);
-    QAction * deleteDevice = new QAction("Delete", this);
 
-    connect(editDevice, SIGNAL(triggered()), this, SLOT(slotEditRecord()));     // Обработчик вызова диалога редактирования
-    connect(deleteDevice, SIGNAL(triggered()), this, SLOT(slotRemoveRecord())); // Обработчик удаления записи
+    QAction * copyDateToClipboard = new QAction("Copy", this);
 
-    menu->addAction(editDevice);
-    menu->addAction(deleteDevice);
+    connect(copyDateToClipboard, &QAction::triggered, this, [numberOfCell, this] () {OnCopyDateToClipborad(numberOfCell); });     // Обработчик вызова диалога редактирования
 
-    //menu->popup(ui->deviceTableView->viewport()->mapToGlobal(pos));
+    menu->addAction(copyDateToClipboard);
+
+    menu->popup(v_Calendar[numberOfCell]->mapToGlobal(pos));
+}
+
+void MainWindow::OnCopyDateToClipborad(int numberOfCell)
+{
+    QClipboard* clipboard = QApplication::clipboard();
+
+    auto dates = Ctrl.GetWorkMonthDates();
+
+    auto date = dates[numberOfCell];
+
+    QString text = QString::number(date.year) + " " + Ctrl.GetMonthName(date.month) + " " + QString("%1%2").arg(date.day / 10).arg(date.day % 10) + " " + Ctrl.GetDayOfWeekName(date);
+
+    clipboard->setText(text, QClipboard::Clipboard);
+
+    if (clipboard->supportsSelection()) {
+        clipboard->setText(text, QClipboard::Selection);
+    }
 }

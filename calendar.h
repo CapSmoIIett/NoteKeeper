@@ -48,6 +48,7 @@ public:
     int GetDayNumber (int day, int month, int  year);
     int GetNumbersOfDays (int monthNumber, int year);
     QString GetMonthName (int monthNumber);
+    QString GetDayOfWeekName (Date date);
 
     // Work - is functions about month we show
     int GetWorkYear  ();
@@ -84,6 +85,16 @@ private:
         "April", "May", "June",
         "July", "August", "September",
         "October", "November", "December"
+    };
+
+    QVector<QString> v_daysOfWeek = {
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
     };
 };
 

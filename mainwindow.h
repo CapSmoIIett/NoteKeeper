@@ -9,6 +9,7 @@
 #include <QFrame>
 #include <QLabel>
 #include <QPushButton>
+#include <QClipboard>
 
 #include <QVector>
 #include <QString>
@@ -39,7 +40,8 @@ private:
     QGridLayout* CreateCalendar();
 
 private slots:
-    void OnCustomMenuRequested();
+    void OnCustomMenuRequested(QPoint pos, int numberOfCell);
+    void OnCopyDateToClipborad(int numberOfCell);
 
 
 private:
