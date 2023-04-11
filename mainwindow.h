@@ -38,6 +38,10 @@ private:
     QHBoxLayout* CreateCtrlPanel();
     QGridLayout* CreateCalendar();
 
+private slots:
+    void OnCustomMenuRequested();
+
+
 private:
     Ui::MainWindow *ui;
     CalendarCtrl Ctrl;

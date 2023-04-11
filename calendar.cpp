@@ -2,8 +2,8 @@
 #include <map>
 
 CalendarCtrl::CalendarCtrl() :
-    i_WorkMonth(JANUARY),
-    i_WorkYear(2000)
+    i_WorkMonth(GetCurMonth()), // JANUARY
+    i_WorkYear(GetCurYear()) // 2000
 {
 
 }
@@ -117,6 +117,57 @@ QVector<int> CalendarCtrl::GetWorkMonthDays ()
     return month;
 }
 
+QVector<Date> CalendarCtrl::GetWorkMonthDates ()
+{
+    QVector<Date> date(42, {0, 0, 0});
+
+    int placeOfFirstDay = GetDayNumber (1, i_WorkMonth + 1, i_WorkYear);
+
+    int workMonthNumberOfDays = GetNumbersOfDays(i_WorkMonth, i_WorkYear);
+
+    for (int numberOfDay = 1; numberOfDay <= workMonthNumberOfDays; numberOfDay++)
+        date[numberOfDay + placeOfFirstDay - 1] = {numberOfDay, i_WorkMonth, i_WorkYear};
+
+
+    int prevMonth = 0;
+    int prevYear = 0;
+    if (i_WorkMonth == JANUARY)
+    {
+        prevMonth = DECEMBER;
+        prevYear = i_WorkYear - 1;
+    }
+    else
+    {
+        prevMonth = i_WorkMonth - 1;
+        prevYear = i_WorkYear;
+    }
+
+    int prevMonthNumberOfDays = GetNumbersOfDays(prevMonth, prevYear);
+
+    for (int i = placeOfFirstDay - 1; i >= 0; i--)
+       date[i] = {prevMonthNumberOfDays--, prevMonth, prevYear};
+
+
+    int nextMonth = 0;
+    int nextYear = 0;
+    if (i_WorkMonth == DECEMBER)
+    {
+        nextMonth = JANUARY;
+        nextYear = i_WorkYear + 1;
+    }
+    else
+    {
+        nextMonth = i_WorkMonth + 1;
+        nextYear = i_WorkYear;
+    }
+
+    for (int i = 1; (i + placeOfFirstDay + workMonthNumberOfDays - 1) % 7 != 0; i++)
+        date[i + placeOfFirstDay + workMonthNumberOfDays - 1] = {i, nextMonth, nextYear};
+
+
+    return date;
+}
+
 int CalendarCtrl::GetCurDay ()
 {
     auto str = QDateTime::currentDateTime().toString("dd");
@@ -126,7 +177,7 @@ int CalendarCtrl::GetCurDay ()
 int CalendarCtrl::GetCurMonth ()
 {
     auto str = QDateTime::currentDateTime().toString("MM");
-    return str.toInt();
+    return str.toInt() - 1;
 }
 
 int CalendarCtrl::GetCurYear ()
@@ -150,6 +201,22 @@ void CalendarCtrl::GoPrevMonth()
 {
     if (i_WorkMonth == JANUARY) i_WorkYear--;
     i_WorkMonth = i_WorkMonth == JANUARY ? DECEMBER : i_WorkMonth - 1;
+}
+
+int CalendarCtrl::GetDateInt (int day, int month, int year)
+{
+    return day + month * 31 + year * 366;
+}
+
+int CalendarCtrl::GetDateInt (Date date)
+{
+    return GetDateInt(date.day, date.month, date.year);
+}
+
+int CalendarCtrl::GetCurDateInt()
+{
+    return GetDateInt(GetCurDay(), GetCurMonth(), GetCurYear());
+
 }
 
 

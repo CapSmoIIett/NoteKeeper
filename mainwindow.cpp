@@ -26,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto ctrlPanel = CreateCtrlPanel();
 
-
     /*****************************************************
      * Configure main Layout
      */
@@ -166,14 +165,28 @@ QGridLayout* MainWindow::CreateCalendar()
      * Print calendar
      */
 
-    auto days = Ctrl.GetWorkMonthDays();
+    auto dates = Ctrl.GetWorkMonthDates();
 
-    for (int i = 0; i < days.size(); i++)
+    for (int i = 0; i < dates.size(); i++)
     {
+        if (dates[i].day == 0)
+        {
+            v_Calendar[i]->hide();
+            continue;
+        }
         if (v_Calendar[i]->layout()->count() > 0)
         {
             auto a = v_Calendar[i]->layout()->itemAt(0)->widget();
-            dynamic_cast<QLabel*>(a)->setText(QString::number(days[i]));
+            dynamic_cast<QLabel*>(a)->setText(QString::number(dates[i].day));
+
+            if (Ctrl.GetDateInt(dates[i]) < Ctrl.GetCurDateInt())
+                v_Calendar[i]->setObjectName("past");
+            else if (Ctrl.GetDateInt(dates[i]) > Ctrl.GetCurDateInt())
+                v_Calendar[i]->setObjectName("future");
+            else
+                v_Calendar[i]->setObjectName("today");
+
+            v_Calendar[i]->setStyleSheet(CELL_STYLE);
         }
     }
 
@@ -182,11 +195,13 @@ QGridLayout* MainWindow::CreateCalendar()
 
 void MainWindow::PrintCalendar (int month, int year)
 {
-    auto days = Ctrl.GetWorkMonthDays();
+    auto dates= Ctrl.GetWorkMonthDates();
 
-    for (int i = 0; i < days.size(); i++)
+    bool isCur = month == Ctrl.GetCurMonth() && year == Ctrl.GetCurYear();
+
+    for (int i = 0; i < dates.size(); i++)
     {
-        if (days[i] == 0)
+        if (dates[i].day == 0)
         {
             v_Calendar[i]->hide();
             continue;
@@ -197,7 +212,17 @@ void MainWindow::PrintCalendar (int month, int year)
         if (v_Calendar[i]->layout()->count() > 0)
         {
             auto a = v_Calendar[i]->layout()->itemAt(0)->widget();
-            dynamic_cast<QLabel*>(a)->setText(QString::number(days[i]));
+            dynamic_cast<QLabel*>(a)->setText(QString::number(dates[i].day));
+
+            if (Ctrl.GetDateInt(dates[i]) < Ctrl.GetCurDateInt())
+                v_Calendar[i]->setObjectName("past");
+            else if (Ctrl.GetDateInt(dates[i]) > Ctrl.GetCurDateInt())
+                v_Calendar[i]->setObjectName("future");
+            else
+                v_Calendar[i]->setObjectName("today");
+
+            v_Calendar[i]->setStyleSheet(CELL_STYLE);
+
         }
     }
 
@@ -217,4 +242,18 @@ void MainWindow::OnBtnBackClick()
     PrintCalendar();
 }
 
+void MainWindow::OnCustomMenuRequested()
+{
+    QMenu * menu = new QMenu(this);
+    /* Создаём действия для контекстного меню */
+    QAction * editDevice = new QAction("Edit", this);
+    QAction * deleteDevice = new QAction("Delete", this);
 
+    connect(editDevice, SIGNAL(triggered()), this, SLOT(slotEditRecord()));     // Обработчик вызова диалога редактирования
+    connect(deleteDevice, SIGNAL(triggered()), this, SLOT(slotRemoveRecord())); // Обработчик удаления записи
+
+    menu->addAction(editDevice);
+    menu->addAction(deleteDevice);
+
+    //menu->popup(ui->deviceTableView->viewport()->mapToGlobal(pos));
+}

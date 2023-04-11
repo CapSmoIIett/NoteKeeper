@@ -25,9 +25,20 @@
 #define SATURDAY	5
 #define SUNDAY		6
 
+#define TODAY 		10
+#define PAST 		11
+#define FUTURE 		12
+
 #include <QString>
 #include <QVector>
 #include <QDateTime>
+
+struct Date
+{
+    int day;
+    int month;
+    int year;
+};
 
 class CalendarCtrl
 {
@@ -42,7 +53,10 @@ public:
     int GetWorkYear  ();
     int GetWorkMonth ();
     void SetWorkMonth (int month);
+
     QVector<int> GetWorkMonthDays ();
+    QVector<Date> GetWorkMonthDates ();
+    QVector<QString> GetWorkMonthDaysStatus ();
 
     // Current - is functions about current month, day, year in real life
     int GetCurDay ();
@@ -53,6 +67,10 @@ public:
 
     void GoNextMonth();
     void GoPrevMonth();
+
+    int GetDateInt (int day, int month, int year);
+    int GetDateInt (Date);
+    int GetCurDateInt();
 
 private:
 
