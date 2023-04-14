@@ -9,7 +9,7 @@ void FrameClickable::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->type() == QMouseEvent::MouseButtonDblClick)
     {
-        DoubleClick(event);
+        emit DoubleClick(event);
     }
 
     return QFrame::mouseDoubleClickEvent(event);

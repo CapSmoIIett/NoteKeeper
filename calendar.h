@@ -45,10 +45,11 @@ class CalendarCtrl
 public:
     CalendarCtrl ();
 
-    int GetDayNumber (int day, int month, int  year);
-    int GetNumbersOfDays (int monthNumber, int year);
-    QString GetMonthName (int monthNumber);
-    QString GetDayOfWeekName (Date date);
+    static int GetDayNumber (int day, int month, int  year);
+    static int GetNumbersOfDays (int monthNumber, int year);
+    static QString GetMonthName (int monthNumber);
+    static QString GetDayOfWeekName (Date date);
+    static QString GetDayOfWeekName (int numberOfDayOfWeek);
 
     // Work - is functions about month we show
     int GetWorkYear  ();
@@ -73,13 +74,7 @@ public:
     int GetDateInt (Date);
     int GetCurDateInt();
 
-private:
-
-    int i_WorkMonth;
-    int i_WorkYear;
-
-
-    QVector<QString> months =
+    const static inline QVector<QString> v_Months =
     {
         "January", "February", "March",
         "April", "May", "June",
@@ -87,7 +82,7 @@ private:
         "October", "November", "December"
     };
 
-    QVector<QString> v_daysOfWeek = {
+    const static inline QVector<QString> v_daysOfWeek = {
         "Monday",
         "Tuesday",
         "Wednesday",
@@ -96,6 +91,13 @@ private:
         "Saturday",
         "Sunday"
     };
+
+private:
+
+    int i_WorkMonth;
+    int i_WorkYear;
+
+
 };
 
 #endif // CALENDAR_H

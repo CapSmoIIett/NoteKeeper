@@ -12,13 +12,19 @@
 #include <QClipboard>
 #include <QTextBlock>
 #include <QSpacerItem>
+#include <QTextEdit>
 
 #include <QVector>
 #include <QString>
 
 #include "calendar.h"
 #include "frameclickable.h"
+#include "notedlg.h"
+#include "database.h"
+#include "elidedlabel.h"
 
+#define INDEX_DATE 0
+#define INDEX_NOTE 1
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -47,6 +53,8 @@ private:
     QHBoxLayout* CreateCtrlPanel();
     QGridLayout* CreateCalendar();
 
+    void ClearNotes();
+
     bool eventFilter(QObject* o, QEvent* e);
 
 private:
@@ -63,6 +71,9 @@ private:
     QPushButton *b_Next;
 
     QVBoxLayout* p_MainLayout;
+
+    Database* db;
+
 };
 
 

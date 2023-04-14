@@ -17,6 +17,7 @@ int CalendarCtrl::GetDayNumber (int day, int month, int  year)
 
     int dayNumber = ( year + year/4 - year/100 + year/400 + t[month-1] + day) % 7;
 
+    // we start from mondey
     if (dayNumber == 0)
         return SUNDAY;
 
@@ -67,16 +68,23 @@ int CalendarCtrl::GetNumbersOfDays (int monthNumber, int year)
 
     if (monthNumber == DECEMBER)
         return (31);
+
+    return 0;
 }
 
 QString CalendarCtrl::GetMonthName (int monthNumber)
 {
-    return months[monthNumber];
+    return v_Months[monthNumber];
 }
 
 QString CalendarCtrl::GetDayOfWeekName (Date date)
 {
    return v_daysOfWeek[GetDayNumber(date.day, date.month + 1, date.year)];
+}
+
+QString CalendarCtrl::GetDayOfWeekName (int numberOfDayOfWeek)
+{
+    return v_daysOfWeek[numberOfDayOfWeek];
 }
 
 int CalendarCtrl::GetWorkYear  ()
@@ -95,6 +103,8 @@ void CalendarCtrl::SetWorkMonth (int month)
 }
 
 
+// return array for calendar
+// each date in the right cell
 QVector<int> CalendarCtrl::GetWorkMonthDays ()
 {
     QVector<int> month(42, 0);

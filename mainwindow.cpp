@@ -19,6 +19,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->resize(640, 400);
 
 
+    /*****************************************************
+     * Configure database
+     */
+
+    db = new Database;
+    db->CreateTables();
+
+
     menuBar()->addMenu("File");
     //p_MenuBar = new QMenuBar(this);
     //p_QToolBar = new QToolBar(this);
@@ -66,7 +74,7 @@ QHBoxLayout* MainWindow::CreateCtrlPanel()
      * Configure buttons
      */
 
-    l_Date = new QLabel(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + QString::number(Ctrl.GetWorkYear()));
+    l_Date = new QLabel(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + " " + QString::number(Ctrl.GetWorkYear()));
     l_Date->setMaximumHeight(40);
     l_Date->setFixedWidth(400);
     //l_date->setStyleSheet(LABELDATE_STYLE);
@@ -102,8 +110,6 @@ QHBoxLayout* MainWindow::CreateCtrlPanel()
     p_horizontalLayout->addWidget(b_Back, 1, Qt::AlignRight);
     p_horizontalLayout->addWidget(l_Date, 1, Qt::AlignCenter);
     p_horizontalLayout->addWidget(b_Next, 1, Qt::AlignLeft);
-    //p_horizontalLayout->addWidget(this->todobutton);
-
 
     return p_horizontalLayout;
 }
@@ -113,26 +119,17 @@ QGridLayout* MainWindow::CreateCalendar()
     //Create 7x7 grid
     QGridLayout *grid_layout = new QGridLayout;
 
-    QVector<QString> v_daysOfWeek = {
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday"
-    };
-
-
-    for (int i = 0; i < v_daysOfWeek.size(); i++)
+    // Create header
+    for (int i = 0; i < CalendarCtrl::v_daysOfWeek.size(); i++)
     {
         FrameClickable *frame = new FrameClickable;
         frame->setMinimumHeight(50);//frame->setFixedHeight(50);
+        frame->setMinimumWidth(125);
 
         QHBoxLayout *hl = new QHBoxLayout;
         hl->setAlignment(Qt::AlignCenter);
 
-        QLabel* l_name = new QLabel(v_daysOfWeek[i]);
+        QLabel* l_name = new QLabel(CalendarCtrl::GetDayOfWeekName(i));
 
         hl->addWidget(l_name);
         frame->setLayout(hl);
@@ -141,19 +138,21 @@ QGridLayout* MainWindow::CreateCalendar()
         grid_layout->addWidget(frame, 0, i);
     }
 
-
+    //create cells
     for (auto i = 0; i < 42; i++ )
     {
         FrameClickable *frame = new FrameClickable;
-        frame->setMinimumHeight(50);
+        frame->setMinimumHeight(75);
+        frame->setMinimumWidth(125);
 
         QVBoxLayout *vl = new QVBoxLayout;
-        //vl->setAlignment(Qt::AlignCenter);
         vl->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
-        QLabel* l_name = new QLabel(QString::number(i + 1));
+        QLabel* l_date = new QLabel(QString::number(i + 1));
 
-        vl->addWidget(l_name);
+        //text->setStyleSheet(TEXT_FIELD);
+
+        vl->addWidget(l_date);
         frame->setLayout(vl);
         frame->setStyleSheet(CELL_STYLE);
 
@@ -173,17 +172,20 @@ QGridLayout* MainWindow::CreateCalendar()
 
     auto dates = Ctrl.GetWorkMonthDates();
 
+
+    // colored
     for (int i = 0; i < dates.size(); i++)
     {
         if (dates[i].day == 0)
         {
+            // hide row if we need only 5 rows
             v_Calendar[i]->hide();
             continue;
         }
         if (v_Calendar[i]->layout()->count() > 0)
         {
-            auto a = v_Calendar[i]->layout()->itemAt(0)->widget();
-            dynamic_cast<QLabel*>(a)->setText(QString::number(dates[i].day));
+            auto dateLabel = v_Calendar[i]->layout()->itemAt(INDEX_DATE)->widget();
+            dynamic_cast<QLabel*>(dateLabel)->setText(QString::number(dates[i].day));
 
             if (Ctrl.GetDateInt(dates[i]) < Ctrl.GetCurDateInt())
                 v_Calendar[i]->setObjectName("past");
@@ -203,12 +205,11 @@ void MainWindow::PrintCalendar (int month, int year)
 {
     auto dates= Ctrl.GetWorkMonthDates();
 
-    bool isCur = month == Ctrl.GetCurMonth() && year == Ctrl.GetCurYear();
-
     for (int i = 0; i < dates.size(); i++)
     {
         if (dates[i].day == 0)
         {
+            // hide row if we need only 5 rows
             v_Calendar[i]->hide();
             continue;
         }
@@ -217,8 +218,8 @@ void MainWindow::PrintCalendar (int month, int year)
 
         if (v_Calendar[i]->layout()->count() > 0)
         {
-            auto a = v_Calendar[i]->layout()->itemAt(0)->widget();
-            dynamic_cast<QLabel*>(a)->setText(QString::number(dates[i].day));
+            auto dateLabel = v_Calendar[i]->layout()->itemAt(INDEX_DATE)->widget();
+            dynamic_cast<QLabel*>(dateLabel)->setText(QString::number(dates[i].day));
 
             if (Ctrl.GetDateInt(dates[i]) < Ctrl.GetCurDateInt())
                 v_Calendar[i]->setObjectName("past");
@@ -228,23 +229,23 @@ void MainWindow::PrintCalendar (int month, int year)
                 v_Calendar[i]->setObjectName("today");
 
             v_Calendar[i]->setStyleSheet(CELL_STYLE);
-
         }
     }
-
 }
 
 void MainWindow::OnBtnNextClick()
 {
     Ctrl.GoNextMonth();
-    l_Date->setText(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + QString::number(Ctrl.GetWorkYear()));
+    l_Date->setText(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + " " + QString::number(Ctrl.GetWorkYear()));
+    ClearNotes();
     PrintCalendar();
 }
 
 void MainWindow::OnBtnBackClick()
 {
     Ctrl.GoPrevMonth();
-    l_Date->setText(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + QString::number(Ctrl.GetWorkYear()));
+    l_Date->setText(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + " " + QString::number(Ctrl.GetWorkYear()));
+    ClearNotes();
     PrintCalendar();
 }
 
@@ -282,16 +283,48 @@ void MainWindow::OnAddNote(QPoint pos, int numberOfCell)
 {
     auto frame = v_Calendar[numberOfCell];
 
-    QTextBlock* text = new QTextBlock();
-    QFrame* coloredFrame = new QFrame;
+    auto dates = Ctrl.GetWorkMonthDates();
+    auto date = dates[numberOfCell];
 
-    if (frame->layout()->count() > 0)
+    NoteDlg* dlg = new NoteDlg(date);
+
+    if (dlg->exec() == QDialog::Accepted)
     {
-        auto layout = frame->layout();
+        QString str = dlg->GetText();
 
-        QLabel* l = new QLabel("1");
-        layout->addWidget(l);
+        db->InsertNote(date, str);
+
+        if (!str.isEmpty() && frame->layout()->count() > 0)
+        {
+            auto layout = frame->layout();
+
+            ElidedLabel* l_text = nullptr;
+
+            if (layout->count() < 2)
+            {
+                l_text = new ElidedLabel(str);
+                layout->addWidget(l_text);
+            }
+            else
+            {
+                l_text = dynamic_cast<ElidedLabel*>(layout->itemAt(INDEX_NOTE)->widget());
+                l_text->setText(str);
+            }
+
+            //text->setStyleSheet(TEXT_FIELD);
+
+        }
     }
+}
+
+void MainWindow::ClearNotes()
+{
+    for (auto day : v_Calendar)
+    {
+        if (day->layout()->count() > 1)
+            delete day->layout()->itemAt(INDEX_NOTE)->widget();
+    }
+
 }
 
 bool MainWindow::eventFilter(QObject* o, QEvent* e)
@@ -299,9 +332,8 @@ bool MainWindow::eventFilter(QObject* o, QEvent* e)
     if (e->type() == QEvent::MouseButtonDblClick)
     {
         QMouseEvent* m = (QMouseEvent*) e;
-        // process double click
-        return true; // eat event
+        return true;
     }
-    // standard event processing
+
     return false;
 }
