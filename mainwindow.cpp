@@ -75,6 +75,7 @@ QHBoxLayout* MainWindow::CreateCtrlPanel()
      */
 
     l_Date = new QLabel(Ctrl.GetMonthName(Ctrl.GetWorkMonth()) + " " + QString::number(Ctrl.GetWorkYear()));
+    l_Date->setAlignment(Qt::AlignCenter);
     l_Date->setMaximumHeight(40);
     l_Date->setFixedWidth(400);
     //l_date->setStyleSheet(LABELDATE_STYLE);

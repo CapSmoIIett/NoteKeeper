@@ -24,10 +24,10 @@
         background-color: #FFFFFF;\
     }\
     QFrame#today {\
-        background-color: #DDDDFF;\
+        background-color: #17BF60;\
     }\
     QLabel#today {\
-        background-color: #FFFF88;\
+        background-color: #17BF60;\
         color: #FF0000;\
         border: 1px\
         solid #FF0000;\
@@ -74,6 +74,13 @@
     }\
     QPushButton:hover {\
         color: #2222BB;\
+    }"
+
+
+
+#define TEXT_FIELD \
+    "QTextEditor#today {\
+        background-color: #17BF60;\
     }"
 
 #endif // STYLESHEETS_H
