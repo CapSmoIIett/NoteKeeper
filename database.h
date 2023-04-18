@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QMessageBox>
 #include <QSqlQuery>
+#include <QSqlError>
 
 #include "calendar.h"
 
@@ -21,7 +22,7 @@ public:
     void InsertNote(Date date, QString str);
 
     QString GetNote(Date date);
-    QVector<QString> GetNotes(Date date);
+    QVector<QString> GetNotes(Date firstDate, Date secondDate);
 
 
 private:

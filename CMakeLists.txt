@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #set(PostgreSQL_ADDITIONAL_VERSIONS "15")
 
-#set(PostgreSQL_INCLUDE_DIRS "D:/Programs/PostgreSQL/15/include")
-#set(PostgreSQL_LIBRARY_DIRS "D:/Programs/PostgreSQL/15/bin")
+set(PostgreSQL_INCLUDE_DIRS "D:/Programs/PostgreSQL/15/include")
+set(PostgreSQL_LIBRARY_DIRS "D:/Programs/PostgreSQL/15/bin")
 
 include_directories (${PostgreSQL_INCLUDE_DIRS})
 link_directories(${PostgreSQL_LIBRARY_DIRS})

@@ -24,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
      */
 
     db = new Database;
-    db->CreateTables();
-
 
     menuBar()->addMenu("File");
     //p_MenuBar = new QMenuBar(this);
