@@ -59,7 +59,7 @@ void Database::InsertNote(Date date, QString str)
                 + QString::number(date.year);
 
     query.bindValue(":date", QString("%1%2").arg(date.day / 10).arg(date.day % 10) + "/"
-            + QString("%1%2").arg(date.month / 10).arg(date.month % 10) + "/"
+            + QString("%1%2").arg((date.month + 1) / 10).arg((date.month + 1) % 10) + "/"
             + QString::number(date.year));
     query.bindValue(":text", str);
 
@@ -75,20 +75,81 @@ QString Database::GetNote(Date date)
 {
     QSqlQuery query(db);
     QString text;
+    int result = 0;
 
-    query.exec("CREATE TABLE IF NOT EXISTS note"
-               "("
-               "	date DATE NOT NULL,"
-               "	text TEXT NOT NULL"
-               ")"
-               );
+    query.prepare("SELECT text FROM notes WHERE data = TO_DATE(:date, 'DD/MM/YYYY')");
+
+    query.bindValue(":date", QString("%1%2").arg(date.day / 10).arg(date.day % 10) + "/"
+            + QString("%1%2").arg((date.month + 1) / 10).arg((date.month + 1) % 10) + "/"
+            + QString::number(date.year));
+
+    result = query.exec();
+
+    if (!result)
+    {
+        qDebug() << query.lastQuery();
+        qDebug() << query.lastError().text();
+        return "";
+    }
+
+    if (!query.next())
+    {
+        text = query.value(0).toString();
+    }
 
     return text;
 }
 
-QVector<QString> Database::GetNotes(Date firstDate, Date secondDate)
+QVector<QString> Database::GetNotes(QVector<Date> dates)
 {
-    QVector<QString> result;
+    int days = dates.last().day == 0 ? 35 : 42;
 
-    return result;
+    QVector<QString> notes(days, "");
+    QSqlQuery query(db);
+    int result = 0;
+
+    Date firstDate = dates.first();
+    Date secondDate = dates[days - 1];
+
+    query.prepare("SELECT * FROM notes WHERE date BETWEEN "
+                  "TO_DATE(:firstDate, 'DD/MM/YYYY') AND "
+                  "TO_DATE(:secondDate, 'DD/MM/YYYY')");
+
+    query.bindValue(":firstDate", QString("%1%2").arg(firstDate.day / 10).arg(firstDate.day % 10) + "/"
+            + QString("%1%2").arg((firstDate.month + 1) / 10).arg((firstDate.month + 1) % 10) + "/"
+            + QString::number(firstDate.year));
+
+    query.bindValue(":secondDate", QString("%1%2").arg(secondDate.day / 10).arg(secondDate.day % 10) + "/"
+            + QString("%1%2").arg((secondDate.month + 1) / 10).arg((secondDate.month + 1) % 10) + "/"
+            + QString::number(secondDate.year));
+
+    result = query.exec();
+
+    if (!result)
+    {
+        qDebug() << query.lastQuery();
+        qDebug() << query.lastError().text();
+        return notes;
+    }
+
+    QSqlRecord rec = query.record();
+    const int indexDate = rec.indexOf( "date" );
+    const int indexText = rec.indexOf( "text" );
+
+    int i = 0;
+    while (query.next())
+    {
+        for (; i < days; i++)
+        {
+            if (query.value(indexDate).toDate().day() == dates[i].day &&
+                query.value(indexDate).toDate().month() == (dates[i].month + 1) &&
+                query.value(indexDate).toDate().year() == dates[i].year)
+            {
+                notes[i] = query.value(indexText).toString();
+                break;
+            }
+        }
+    }
+
+    return notes;
 }

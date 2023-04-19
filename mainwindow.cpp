@@ -171,8 +171,9 @@ QGridLayout* MainWindow::CreateCalendar()
 
     auto dates = Ctrl.GetWorkMonthDates();
 
+    auto notes = db->GetNotes(dates);
 
-    // colored
+    // colored adn insert labels
     for (int i = 0; i < dates.size(); i++)
     {
         if (dates[i].day == 0)
@@ -194,6 +195,14 @@ QGridLayout* MainWindow::CreateCalendar()
                 v_Calendar[i]->setObjectName("today");
 
             v_Calendar[i]->setStyleSheet(CELL_STYLE);
+
+            if (!notes[i].isEmpty())
+            {
+                ElidedLabel* l_text = new ElidedLabel();
+                QString text = notes[i];
+                l_text->setText(text);
+                v_Calendar[i]->layout()->addWidget(l_text);
+            }
         }
     }
 
